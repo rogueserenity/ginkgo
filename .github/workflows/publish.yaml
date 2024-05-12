@@ -5,13 +5,14 @@ on:
     types: [published]
 
 env:
-  REGISTRY: rogueserenity
-  IMAGE_NAME: ginkgo
+  REGISTRY: docker.io
+  IMAGE_NAME: rogueserenity/ginkgo
 
 permissions:
-  attestations: write
   id-token: write
   contents: read
+  attestations: write
+  packages: write
 
 jobs:
   push_to_registry:
@@ -31,7 +32,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
