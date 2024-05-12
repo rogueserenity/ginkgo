@@ -4,6 +4,10 @@ on:
   release:
     types: [published]
 
+env:
+  REGISTRY: rogueserenity
+  IMAGE_NAME: ginkgo
+
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
@@ -26,8 +30,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            rogueserenity/ginkgo
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -46,6 +49,6 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
