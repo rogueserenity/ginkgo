@@ -9,6 +9,10 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
     steps:
+      - name: Load Environment
+        id: dotenv
+        uses: falti/dotenv-action@v1
+
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -18,4 +22,6 @@ jobs:
       - name: Build
         uses: docker/build-push-action@v5
         with:
+          build-args: |
+            TAG:${{ steps.dotenv.outputs.tag }}
           platforms: "linux/arm64,linux/amd64"
