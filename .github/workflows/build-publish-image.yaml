@@ -33,6 +33,15 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
 
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Load Environment
+        id: dotenv
+        uses: falti/dotenv-action@v1
+        with:
+          log-variables: true
+
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -43,6 +52,9 @@ jobs:
         id: push
         uses: docker/build-push-action@v5
         with:
+          context: .
+          build-args: |
+            TAG=${{ steps.dotenv.outputs.tag }}
           push: true
           platforms: "linux/arm64,linux/amd64"
           tags: ${{ steps.meta.outputs.tags }}
