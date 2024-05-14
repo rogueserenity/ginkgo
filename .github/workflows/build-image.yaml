@@ -9,6 +9,9 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
       - name: Load Environment
         id: dotenv
         uses: falti/dotenv-action@v1
