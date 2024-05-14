@@ -27,6 +27,7 @@ jobs:
       - name: Build
         uses: docker/build-push-action@v5
         with:
+          context: .
           build-args: |
-            TAG:${{ steps.dotenv.outputs.tag }}
+            TAG=${{ steps.dotenv.outputs.tag }}
           platforms: "linux/arm64,linux/amd64"
