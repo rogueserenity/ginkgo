@@ -1,0 +1,35 @@
+name: Check For Ginkgo Releases
+
+on:
+  schedule:
+    - cron: '0 0,6,12,18 * * *'
+  workflow_dispatch:
+
+env:
+  OWNER: onsi
+  REPO: ginkgo
+
+jobs:
+  check_for_release:
+    name: Check For Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Fetch Latest Release
+        id: get_latest_release
+        uses: octokit/request-action@v2.3.1
+        with:
+          route: GET /repos/{owner}/{repo}/releases/latest
+          owner: ${{ env.OWNER }}
+          repo: ${{ env.REPO }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Write .env File
+        run: |
+          TAG="${{ fromJson(steps.create_check_run.outputs.data).tag_name }}"
+          echo "TAG=${TAG}" > .env
+          echo "" >> .env
+          cat .env
