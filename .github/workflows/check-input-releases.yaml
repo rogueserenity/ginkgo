@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
 
       - name: Fetch Latest Release
         id: get_latest_release
@@ -31,15 +33,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - uses: mukunku/tag-exists-action@v1.6.0
+        id: check-tag
+        with:
+          tag: ${{ fromJson(steps.get_latest_release.outputs.data).tag_name }}
+
       - name: Write .env File
+        if: steps.check-tag.outputs.exists == 'false'
         run: |
           TAG="${{ fromJson(steps.get_latest_release.outputs.data).tag_name }}"
           echo "TAG=${TAG}" > .env
           echo "" >> .env
 
       - name: Create Pull Request
+        if: steps.check-tag.outputs.exists == 'false'
         uses: peter-evans/create-pull-request@v6
         with:
+          base: main
           add-paths: .env
           commit-message: updating to version ${{ fromJson(steps.get_latest_release.outputs.data).tag_name }}
           branch: update-version
