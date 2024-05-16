@@ -9,6 +9,10 @@ env:
   OWNER: onsi
   REPO: ginkgo
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   check_for_release:
     name: Check For Release
@@ -32,4 +36,13 @@ jobs:
           TAG="${{ fromJson(steps.get_latest_release.outputs.data).tag_name }}"
           echo "TAG=${TAG}" > .env
           echo "" >> .env
-          cat .env
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          add-paths: .env
+          commit-message: updating to version ${{ fromJson(steps.get_latest_release.outputs.data).tag_name }}
+          branch: update-version
+          title: Update ${{ env.REPO }} to ${{ fromJson(steps.get_latest_release.outputs.data).tag_name }}
+          body: ${{ fromJson(steps.get_latest_release.outputs.data).body }}
+          assignees: rogueserenity
